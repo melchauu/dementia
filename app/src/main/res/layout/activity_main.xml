@@ -1,42 +1,42 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/etTextHint"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:lines="1"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/etSearchHint"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
-    <Button
-        android:id="@+id/btSpeak"
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="speak"
-        android:text="@string/btSpeak"
-        tools:context=".VoiceRecognitionActivity" />
-
-    <Spinner
-        android:id="@+id/sNoOfMatches"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/saNoOfMatches"
-        android:prompt="@string/sNoOfMatches"/>
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/toggleButton1"
+        android:layout_marginTop="28dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/tvTextMatches"
-        android:textStyle="bold" />
+        android:layout_below="@+id/progressBar1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="47dp" />
 
-    <ListView
-        android:id="@+id/lvTextMatches"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <ToggleButton
+        android:id="@+id/toggleButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:text="ToggleButton" />
 
-</LinearLayout>
+</RelativeLayout>

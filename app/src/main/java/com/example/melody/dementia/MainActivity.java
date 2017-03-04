@@ -1,140 +1,180 @@
 package com.example.melody.dementia;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import java.util.ArrayList;
-import java.util.List;
 
-import android.app.Activity;
-import android.app.SearchManager;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.os.Bundle;
+import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
-public class MainActivity extends Activity {
-    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
+public class MainActivity extends Activity implements
+        RecognitionListener {
 
-    private EditText metTextHint;
-    private ListView mlvTextMatches;
-    private Spinner msTextMatches;
-    private Button mbtSpeak;
+    private TextView returnedText;
+    private ToggleButton toggleButton;
+    private ProgressBar progressBar;
+    private SpeechRecognizer speech = null;
+    private Intent recognizerIntent;
+    private String LOG_TAG = "VoiceRecogActivity";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        metTextHint = (EditText) findViewById(R.id.etTextHint);
-        mlvTextMatches = (ListView) findViewById(R.id.lvTextMatches);
-        msTextMatches = (Spinner) findViewById(R.id.sNoOfMatches);
-        mbtSpeak = (Button) findViewById(R.id.btSpeak);
-        checkVoiceRecognition();
-    }
+        returnedText = (TextView) findViewById(R.id.textView1);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+        toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
 
-    public void checkVoiceRecognition() {
-        // Check if voice recognition is present
-        PackageManager pm = getPackageManager();
-        List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(
-                RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-        if (activities.size() == 0) {
-            mbtSpeak.setEnabled(false);
-            mbtSpeak.setText("Voice recognizer not present");
-            Toast.makeText(this, "Voice recognizer not present",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void speak(View view) {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-        // Specify the calling package to identify your application
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass()
-                .getPackage().getName());
-
-        // Display an hint to the user about what he should say.
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, metTextHint.getText()
-                .toString());
-
-        // Given an hint to the recognizer about what the user is going to say
-        //There are two form of language model available
-        //1.LANGUAGE_MODEL_WEB_SEARCH : For short phrases
-        //2.LANGUAGE_MODEL_FREE_FORM  : If not sure about the words or phrases and its domain.
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+        progressBar.setVisibility(View.INVISIBLE);
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
+        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE,
+                "en");
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                this.getPackageName());
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
 
-        // If number of Matches is not selected then return show toast message
-        if (msTextMatches.getSelectedItemPosition() == AdapterView.INVALID_POSITION) {
-            Toast.makeText(this, "Please select No. of Matches from spinner",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
+        toggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-        int noOfMatches = Integer.parseInt(msTextMatches.getSelectedItem()
-                .toString());
-        // Specify how many results you want to receive. The results will be
-        // sorted where the first result is the one with higher confidence.
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, noOfMatches);
-        //Start the Voice recognizer activity for the result.
-        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (isChecked) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setIndeterminate(true);
+                    speech.startListening(recognizerIntent);
+                } else {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    speech.stopListening();
+                }
+            }
+        });
+
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE)
-
-            //If Voice recognition is successful then it returns RESULT_OK
-            if(resultCode == RESULT_OK) {
-
-                ArrayList<String> textMatchList = data
-                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-                if (!textMatchList.isEmpty()) {
-                    // If first Match contains the 'search' word
-                    // Then start web search.
-                    if (textMatchList.get(0).contains("search")) {
-
-                        String searchQuery = textMatchList.get(0);
-                        searchQuery = searchQuery.replace("search","");
-                        Intent search = new Intent(Intent.ACTION_WEB_SEARCH);
-                        search.putExtra(SearchManager.QUERY, searchQuery);
-                        startActivity(search);
-                    } else {
-                        // populate the Matches
-                        mlvTextMatches
-                                .setAdapter(new ArrayAdapter<String>(this,
-                                        android.R.layout.simple_list_item_1,
-                                        textMatchList));
-                    }
-
-                }
-                //Result code for various error.
-            }else if(resultCode == RecognizerIntent.RESULT_AUDIO_ERROR){
-                showToastMessage("Audio Error");
-            }else if(resultCode == RecognizerIntent.RESULT_CLIENT_ERROR){
-                showToastMessage("Client Error");
-            }else if(resultCode == RecognizerIntent.RESULT_NETWORK_ERROR){
-                showToastMessage("Network Error");
-            }else if(resultCode == RecognizerIntent.RESULT_NO_MATCH){
-                showToastMessage("No Match");
-            }else if(resultCode == RecognizerIntent.RESULT_SERVER_ERROR){
-                showToastMessage("Server Error");
-            }
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onResume() {
+        super.onResume();
     }
-    /**
-     * Helper method to show the toast message
-     **/
-    void showToastMessage(String message){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (speech != null) {
+            speech.destroy();
+            Log.i(LOG_TAG, "destroy");
+        }
+
     }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        Log.i(LOG_TAG, "onBeginningOfSpeech");
+        progressBar.setIndeterminate(false);
+        progressBar.setMax(10);
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+        Log.i(LOG_TAG, "onBufferReceived: " + buffer);
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Log.i(LOG_TAG, "onEndOfSpeech");
+        progressBar.setIndeterminate(true);
+        toggleButton.setChecked(false);
+    }
+
+    @Override
+    public void onError(int errorCode) {
+        String errorMessage = getErrorText(errorCode);
+        Log.d(LOG_TAG, "FAILED " + errorMessage);
+        returnedText.setText(errorMessage);
+        toggleButton.setChecked(false);
+    }
+
+    @Override
+    public void onEvent(int arg0, Bundle arg1) {
+        Log.i(LOG_TAG, "onEvent");
+    }
+
+    @Override
+    public void onPartialResults(Bundle arg0) {
+        Log.i(LOG_TAG, "onPartialResults");
+    }
+
+    @Override
+    public void onReadyForSpeech(Bundle arg0) {
+        Log.i(LOG_TAG, "onReadyForSpeech");
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        Log.i(LOG_TAG, "onResults");
+        ArrayList<String> matches = results
+                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        String text = "";
+        //for (String result : matches)
+            text = matches.get(0);
+
+        returnedText.setText(text);
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+        Log.i(LOG_TAG, "onRmsChanged: " + rmsdB);
+        progressBar.setProgress((int) rmsdB);
+    }
+
+    public static String getErrorText(int errorCode) {
+        String message;
+        switch (errorCode) {
+            case SpeechRecognizer.ERROR_AUDIO:
+                message = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                message = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                message = "Insufficient permissions";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                message = "Network error";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                message = "Network timeout";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                message = "No match";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                message = "RecognitionService busy";
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                message = "error from server";
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                message = "No speech input";
+                break;
+            default:
+                message = "Didn't understand, please try again.";
+                break;
+        }
+        return message;
+    }
+
 }
