@@ -14,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class MainActivity extends Activity implements
@@ -128,11 +129,17 @@ public class MainActivity extends Activity implements
         Log.i(LOG_TAG, "onResults");
         ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        //Toast.makeText(this,"Returned from Spech rec:  \n" , Toast.LENGTH_LONG).show();
+
         String text = "";
         //for (String result : matches)
             text = matches.get(0);
+        // send text off to service
+        //Toast.makeText(this,"Returned Text from Speech: \n"+ text, Toast.LENGTH_LONG).show();
 
         returnedText.setText(text);
+        HttpLogin newReq = new HttpLogin();
+        newReq.sendReceiveRequest(text);
     }
 
     @Override

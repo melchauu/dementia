@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,59 +29,46 @@ public class HttpLogin extends Activity {
     private Button login;
     private EditText username, password;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
 
-        /*login = (Button) findViewById(R.id.login);
-        username = (EditText) findViewById(R.id.username);
-        password = (EditText) findViewById(R.id.password);
 
-        login.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                String   mUsername = username.getText().toString();
-                String  mPassword = password.getText().toString();
-
-                tryLogin(mUsername, mPassword);
-            }
-        });*/
-    }
-
-    protected void sendReceiveRequest(String speechStr, String mPassword)
+    protected String sendReceiveRequest(String speechStr)
     {
         HttpURLConnection connection;
         OutputStreamWriter request = null;
+        Random rand = new Random();
+        Integer rndNum = rand.nextInt(1000);
+        String response = null;
         JSONObject document = new JSONObject();
+
         try {
             document.put("language", "en");
-            document.put("id", rand);
-            document.put("year", "3rd");
-            document.put("curriculum", "Arts");
-            document.put("birthday", "5/5/1993");
+            document.put("id", rndNum);
+            document.put("text", speechStr);
 
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(document);
+        JSONObject documentObj = new JSONObject();
+        documentObj.put("documents", jsonArray);
+        String jsonStr = documentObj.toString();
+
+
         URL url = null;
-        String response = null;
-        String key = "9bc644535e2e4cf6bd097ae545737ff1";
-        String parameters = "username="+speechStr+"&password="+mPassword;
 
-        try
-        {
-            url = new URL("https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/languages?numberOfLanguagesToDetect=1");
+
+
+            url = new URL("https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases");
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Ocp-Apim-Subscription-Key","9bc644535e2e4cf6bd097ae545737ff1");
             connection.setRequestMethod("POST");
-
             request = new OutputStreamWriter(connection.getOutputStream());
-            request.write(parameters);
+
+            Toast.makeText(this,"Returned Text from Speech: \n"+ jsonStr, Toast.LENGTH_LONG).show();
+
+
+            request.write(jsonStr);
             request.flush();
             request.close();
             String line = "";
@@ -93,14 +82,22 @@ public class HttpLogin extends Activity {
             // Response from server after login process will be stored in response variable.
             response = sb.toString();
             // You can perform UI operations here
-            Toast.makeText(this,"Message from Server: \n"+ response, 0).show();
+            Toast.makeText(this,"Message from Server: \n"+ response, Toast.LENGTH_LONG).show();
             isr.close();
             reader.close();
 
+
+
+        }
+        // TODO Auto-generated catch block
+         catch (JSONException e) {
+            e.printStackTrace();
         }
         catch(IOException e)
         {
             // Error
+            e.printStackTrace();
         }
+        return response.toString();
     }
 }
