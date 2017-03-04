@@ -26,6 +26,7 @@ public class MainActivity extends Activity implements
     private Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecogActivity";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
