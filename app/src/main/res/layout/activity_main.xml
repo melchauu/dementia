@@ -18,7 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="speak"
-        android:padding="@dimen/padding_medium"
         android:text="@string/btSpeak"
         tools:context=".VoiceRecognitionActivity" />
 
