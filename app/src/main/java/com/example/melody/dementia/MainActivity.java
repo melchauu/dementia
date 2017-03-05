@@ -1,8 +1,11 @@
 package com.example.melody.dementia;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import android.graphics.Bitmap;
 import android.os.StrictMode;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -22,6 +25,12 @@ import android.widget.ToggleButton;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.graphics.BitmapFactory;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 
 public class MainActivity extends Activity implements
         RecognitionListener {
@@ -137,23 +146,25 @@ public class MainActivity extends Activity implements
     @Override
     public void onResults(Bundle results) {
         JSONObject Keywords = new JSONObject();
+        String check;
+        String returnedImageURl;
         try {
-        Log.i(LOG_TAG, "onResults");
-        ArrayList<String> matches = results
-                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        //Toast.makeText(this,"Returned from Spech rec:  \n" , Toast.LENGTH_LONG).show();
+            Log.i(LOG_TAG, "onResults");
+            ArrayList<String> matches = results
+                    .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            //Toast.makeText(this,"Returned from Spech rec:  \n" , Toast.LENGTH_LONG).show();
 
-        String text = "";
-        //for (String result : matches)
+            String text = "";
+            //for (String result : matches)
             text = matches.get(0);
-        // send text off to service
-        //Toast.makeText(this,"Returned Text from Speech: \n"+ text, Toast.LENGTH_LONG).show();
+            // send text off to service
+            //Toast.makeText(this,"Returned Text from Speech: \n"+ text, Toast.LENGTH_LONG).show();
 
-        //returnedText.setText(text);
-        HttpLogin newReq = new HttpLogin();
-        String returnedStringKeywords;
+            //returnedText.setText(text);
+            HttpLogin newReq = new HttpLogin();
+            String returnedStringKeywords;
 
-        returnedStringKeywords=newReq.sendReceiveRequest(text);
+            returnedStringKeywords = newReq.sendReceiveRequest(text);
 
             JSONObject returnedJson = new JSONObject(returnedStringKeywords);
 
@@ -161,29 +172,58 @@ public class MainActivity extends Activity implements
             JSONArray returnedKeyWordsJson = new JSONArray();
             JSONArray theFinalWords = new JSONArray();
 
-            if(returnedJson.getJSONArray("documents")!=null)
-            {
+            if (returnedJson.getJSONArray("documents") != null) {
                 returnedKeyWordsJson = returnedJson.getJSONArray("documents");
 
-                if(returnedKeyWordsJson.getString(0)!=null)
-                {
+                if (returnedKeyWordsJson.getString(0) != null) {
                     Keywords = returnedKeyWordsJson.getJSONObject(0);
 
-                    if(Keywords.getJSONArray("keyPhrases")!=null)
-                    {
-                        theFinalWords=Keywords.getJSONArray("keyPhrases");
+                    if (Keywords.getJSONArray("keyPhrases") != null) {
+                        theFinalWords = Keywords.getJSONArray("keyPhrases");
                     }
                 }
             }
 
             for (int i = 0; i < theFinalWords.length(); i++) {
                 theFinalWords.getString(i);
-                String check;
+
                 check = theFinalWords.getString(i);
+
+
+                findImage letsGetaPicture = new findImage();
+                returnedImageURl = letsGetaPicture.getImage("check");
+
+
+                JSONObject findFirstResult = new JSONObject(returnedImageURl);
+                JSONArray firstImageReturned = new JSONArray();
+                JSONObject findThumbnail = new JSONObject();
+                String thumbnailURL = new String();
+
+                if (findFirstResult.getJSONArray("value") != null)
+
+                {
+                    firstImageReturned = findFirstResult.getJSONArray("value");
+
+                    if (firstImageReturned.getJSONObject(0) != null) {
+                        findThumbnail = firstImageReturned.getJSONObject(0);
+                    }
+
+                    if (findThumbnail.getString("thumbnailUrl") != null) {
+                        thumbnailURL = findThumbnail.getString("thumbnailUrl");
+                    }
+
+                    URL displayImage = new URL(thumbnailURL);
+                    Bitmap bmp = BitmapFactory.decodeStream(displayImage.openConnection().getInputStream());
+                    returnedImages.setImageBitmap(bmp);
+                }
+
             }
         }
-
         catch (JSONException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
