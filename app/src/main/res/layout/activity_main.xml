@@ -4,12 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
 
     <ProgressBar
         android:id="@+id/progressBar1"
@@ -22,13 +16,40 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp" />
 
+
     <TextView
         android:id="@+id/textView1"
+        android:text="asdfasdf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="47dp" />
+    <ImageView
+        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/progressBar1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="47dp" />
+        android:src="@drawable/happy_48"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:paddingTop="100px"
+        android:paddingBottom="100px"
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/emoticon_3_64"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/emoticon_17_64"
+        android:layout_below="@+id/imageView2"
+        android:layout_centerHorizontal="true" />
 
     <ToggleButton
         android:id="@+id/toggleButton1"

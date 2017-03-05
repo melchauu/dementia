@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements
     private Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecogActivity";
     private ImageView returnedImages;
-
+    private ImageView sentimentFace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,8 @@ public class MainActivity extends Activity implements
         returnedText = (TextView) findViewById(R.id.textView1);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
-        returnedImages = (ImageView) findViewById (R.id.imageView1);
+        returnedImages = (ImageView) findViewById (R.id.imageView2);
+        sentimentFace = (ImageView) findViewById (R.id.imageView1);
 
         progressBar.setVisibility(View.INVISIBLE);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
@@ -200,7 +201,7 @@ public class MainActivity extends Activity implements
 
             JSONArray returnedSentimentJson = new JSONArray();
             JSONObject theFinalSentiment = new JSONObject();
-            Double feelingSentiment;
+            Double feelingSentiment = 0.0;
 
             if (returnedJsonSentiment.getJSONArray("documents") != null) {
                 returnedSentimentJson = returnedJsonSentiment.getJSONArray("documents");
@@ -213,6 +214,17 @@ public class MainActivity extends Activity implements
                     }
                 }
             }
+
+
+                if (feelingSentiment> 0.7){
+                    sentimentFace.setBackgroundResource(R.drawable.emoticon_17_48);
+                }
+                else if (feelingSentiment> 0.5){
+                sentimentFace.setBackgroundResource(R.drawable.happy_48);
+                }
+                else {
+                    sentimentFace.setBackgroundResource(R.drawable.emoticon_3_48);
+                }
 
             for (int i = 0; i < theFinalWords.length(); i++) {
                 theFinalWords.getString(i);
