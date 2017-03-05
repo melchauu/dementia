@@ -39,7 +39,7 @@ public class findNextWords extends Activity {
 
                 String urlBegin = "https://westus.api.cognitive.microsoft.com/text/weblm/v1.0/generateNextWords?model=query&words=";
                 String urlEnd="&order=5&maxNumOfCandidatesReturned=1";
-                String completeUrl = urlBegin + "horses" + urlEnd;
+                String completeUrl = urlBegin + speechStr + urlEnd;
 
                 URL url = null;
 

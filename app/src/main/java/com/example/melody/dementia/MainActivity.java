@@ -161,21 +161,21 @@ public class MainActivity extends Activity implements
             // send text off to service
             //Toast.makeText(this,"Returned Text from Speech: \n"+ text, Toast.LENGTH_LONG).show();
 
-            //returnedText.setText(text);
             HttpLogin newReq = new HttpLogin();
             findNextWords predictNext = new findNextWords();
 
-            predictNext.theNextWordIs(text);
+            //predictNext.theNextWordIs(text);
 
             String returnedStringKeywords;
             String returnedStringSentiment;
+            String returnedStringPredict;
 
 
             returnedStringKeywords = newReq.sendReceiveRequest(text);
 
             returnedStringSentiment = newReq.sendReceiveSentiment(text);
 
-            predictNext.theNextWordIs(text);
+            returnedStringPredict=predictNext.theNextWordIs(text);
 
 
             JSONObject returnedJson = new JSONObject(returnedStringKeywords);
@@ -211,6 +211,28 @@ public class MainActivity extends Activity implements
 
                     if (theFinalSentiment.getDouble("score") != 0.0) {
                         feelingSentiment = theFinalSentiment.getDouble("score");
+                    }
+                }
+            }
+
+
+            JSONObject returnedJsonPredict = new JSONObject(returnedStringPredict);
+
+
+            JSONArray returnedPredictedJson = new JSONArray();
+            JSONObject theFinalPrediction= new JSONObject();
+            String PredictedWord;
+
+            if (returnedJsonPredict.getJSONArray("candidates") != null) {
+                returnedPredictedJson = returnedJsonPredict.getJSONArray("candidates");
+
+                if (returnedPredictedJson.getJSONObject(0) != null) {
+                    theFinalPrediction = returnedPredictedJson.getJSONObject(0);
+
+                    if (theFinalPrediction.getString("word") != null) {
+                        PredictedWord = theFinalPrediction.getString("word");
+                        returnedText.setText(PredictedWord);
+
                     }
                 }
             }
