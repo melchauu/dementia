@@ -162,6 +162,10 @@ public class MainActivity extends Activity implements
 
             //returnedText.setText(text);
             HttpLogin newReq = new HttpLogin();
+            findNextWords predictNext = new findNextWords();
+
+            predictNext.theNextWordIs(text);
+
             String returnedStringKeywords;
             String returnedStringSentiment;
 
@@ -169,6 +173,8 @@ public class MainActivity extends Activity implements
             returnedStringKeywords = newReq.sendReceiveRequest(text);
 
             returnedStringSentiment = newReq.sendReceiveSentiment(text);
+
+            predictNext.theNextWordIs(text);
 
 
             JSONObject returnedJson = new JSONObject(returnedStringKeywords);
