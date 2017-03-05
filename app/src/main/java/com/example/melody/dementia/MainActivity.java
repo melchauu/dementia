@@ -161,21 +161,12 @@ public class MainActivity extends Activity implements
             // send text off to service
             //Toast.makeText(this,"Returned Text from Speech: \n"+ text, Toast.LENGTH_LONG).show();
 
+            /***** FIND KEYWORDS ************/
+
             HttpLogin newReq = new HttpLogin();
-            findNextWords predictNext = new findNextWords();
-
-            //predictNext.theNextWordIs(text);
-
             String returnedStringKeywords;
-            String returnedStringSentiment;
-            String returnedStringPredict;
-
 
             returnedStringKeywords = newReq.sendReceiveRequest(text);
-
-            returnedStringSentiment = newReq.sendReceiveSentiment(text);
-
-            returnedStringPredict=predictNext.theNextWordIs(text);
 
 
             JSONObject returnedJson = new JSONObject(returnedStringKeywords);
@@ -195,6 +186,49 @@ public class MainActivity extends Activity implements
                     }
                 }
             }
+
+
+            /******Disaplay Keyword ********/
+
+            for (int i = 0; i < theFinalWords.length(); i++) {
+                theFinalWords.getString(i);
+            }
+            check = theFinalWords.getString(0);
+
+
+            findImage letsGetaPicture = new findImage();
+            returnedImageURl = letsGetaPicture.getImage(check);
+
+
+            JSONObject findFirstResult = new JSONObject(returnedImageURl);
+            JSONArray firstImageReturned = new JSONArray();
+            JSONObject findThumbnail = new JSONObject();
+            String thumbnailURL = new String();
+
+            if (findFirstResult.getJSONArray("value") != null)
+
+            {
+                firstImageReturned = findFirstResult.getJSONArray("value");
+
+                if (firstImageReturned.getJSONObject(0) != null) {
+                    findThumbnail = firstImageReturned.getJSONObject(0);
+                }
+
+                if (findThumbnail.getString("thumbnailUrl") != null) {
+                    thumbnailURL = findThumbnail.getString("thumbnailUrl");
+                }
+
+                URL displayImage = new URL(thumbnailURL);
+                Bitmap bmp = BitmapFactory.decodeStream(displayImage.openConnection().getInputStream());
+                returnedImages.setImageBitmap(bmp);
+            }
+
+
+            /******* Find Sentiment *********/
+
+            String returnedStringSentiment;
+            returnedStringSentiment = newReq.sendReceiveSentiment(text);
+
 
             JSONObject returnedJsonSentiment = new JSONObject(returnedStringSentiment);
 
@@ -216,11 +250,24 @@ public class MainActivity extends Activity implements
             }
 
 
+            if (feelingSentiment > 0.7) {
+                sentimentFace.setBackgroundResource(R.drawable.emoticon_17_48);
+            } else if (feelingSentiment > 0.5) {
+                sentimentFace.setBackgroundResource(R.drawable.happy_48);
+            } else {
+                sentimentFace.setBackgroundResource(R.drawable.emoticon_3_48);
+            }
+
+
+            /*********Predict Next Word ********/
+
+
+            findNextWords predictNext = new findNextWords();
+            String returnedStringPredict;
+            returnedStringPredict = predictNext.theNextWordIs(text);
             JSONObject returnedJsonPredict = new JSONObject(returnedStringPredict);
-
-
             JSONArray returnedPredictedJson = new JSONArray();
-            JSONObject theFinalPrediction= new JSONObject();
+            JSONObject theFinalPrediction = new JSONObject();
             String PredictedWord;
 
             if (returnedJsonPredict.getJSONArray("candidates") != null) {
@@ -238,57 +285,10 @@ public class MainActivity extends Activity implements
             }
 
 
-                if (feelingSentiment> 0.7){
-                    sentimentFace.setBackgroundResource(R.drawable.emoticon_17_48);
-                }
-                else if (feelingSentiment> 0.5){
-                sentimentFace.setBackgroundResource(R.drawable.happy_48);
-                }
-                else {
-                    sentimentFace.setBackgroundResource(R.drawable.emoticon_3_48);
-                }
-
-            for (int i = 0; i < theFinalWords.length(); i++) {
-                theFinalWords.getString(i);
-
-                check = theFinalWords.getString(i);
-
-
-                findImage letsGetaPicture = new findImage();
-                returnedImageURl = letsGetaPicture.getImage("check");
-
-
-                JSONObject findFirstResult = new JSONObject(returnedImageURl);
-                JSONArray firstImageReturned = new JSONArray();
-                JSONObject findThumbnail = new JSONObject();
-                String thumbnailURL = new String();
-
-                if (findFirstResult.getJSONArray("value") != null)
-
-                {
-                    firstImageReturned = findFirstResult.getJSONArray("value");
-
-                    if (firstImageReturned.getJSONObject(0) != null) {
-                        findThumbnail = firstImageReturned.getJSONObject(0);
-                    }
-
-                    if (findThumbnail.getString("thumbnailUrl") != null) {
-                        thumbnailURL = findThumbnail.getString("thumbnailUrl");
-                    }
-
-                    URL displayImage = new URL(thumbnailURL);
-                    Bitmap bmp = BitmapFactory.decodeStream(displayImage.openConnection().getInputStream());
-                    returnedImages.setImageBitmap(bmp);
-                }
-
-            }
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (JSONException e1) {
+            e1.printStackTrace();
         }
 
     }

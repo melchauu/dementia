@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Random;
 
 /**
@@ -41,11 +42,15 @@ public class findNextWords extends Activity {
                 String urlEnd="&order=5&maxNumOfCandidatesReturned=1";
                 String completeUrl = urlBegin + speechStr + urlEnd;
 
-                URL url = null;
+               // URL url = null;
 
 
 
-                url = new URL(completeUrl);
+
+                //completeUrl = URLEncoder.encode(completeUrl,"UTF-8");
+               // url = new URL(completeUrl);
+                URL url = new URL(completeUrl.replace(" ", "%20"));
+
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Type", "application/json");
