@@ -163,8 +163,13 @@ public class MainActivity extends Activity implements
             //returnedText.setText(text);
             HttpLogin newReq = new HttpLogin();
             String returnedStringKeywords;
+            String returnedStringSentiment;
+
 
             returnedStringKeywords = newReq.sendReceiveRequest(text);
+
+            returnedStringSentiment = newReq.sendReceiveSentiment(text);
+
 
             JSONObject returnedJson = new JSONObject(returnedStringKeywords);
 
@@ -175,11 +180,30 @@ public class MainActivity extends Activity implements
             if (returnedJson.getJSONArray("documents") != null) {
                 returnedKeyWordsJson = returnedJson.getJSONArray("documents");
 
-                if (returnedKeyWordsJson.getString(0) != null) {
+                if (returnedKeyWordsJson.getJSONObject(0) != null) {
                     Keywords = returnedKeyWordsJson.getJSONObject(0);
 
                     if (Keywords.getJSONArray("keyPhrases") != null) {
                         theFinalWords = Keywords.getJSONArray("keyPhrases");
+                    }
+                }
+            }
+
+            JSONObject returnedJsonSentiment = new JSONObject(returnedStringSentiment);
+
+
+            JSONArray returnedSentimentJson = new JSONArray();
+            JSONObject theFinalSentiment = new JSONObject();
+            Double feelingSentiment;
+
+            if (returnedJsonSentiment.getJSONArray("documents") != null) {
+                returnedSentimentJson = returnedJsonSentiment.getJSONArray("documents");
+
+                if (returnedSentimentJson.getJSONObject(0) != null) {
+                    theFinalSentiment = returnedSentimentJson.getJSONObject(0);
+
+                    if (theFinalSentiment.getDouble("score") != 0.0) {
+                        feelingSentiment = theFinalSentiment.getDouble("score");
                     }
                 }
             }
