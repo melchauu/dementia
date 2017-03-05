@@ -22,18 +22,15 @@
         android:text="asdfasdf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/progressBar1"
-        android:paddingRight="400px"
+        android:layout_below="@+id/imageView1"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp" />
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/progressBar1"
         android:src="@drawable/happy_48"
-        android:paddingLeft="100px"
         android:layout_centerHorizontal="true" />
 
     <ImageView
@@ -43,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/emoticon_3_64"
-        android:layout_below="@+id/imageView1"
+        android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true" />
 
     <ImageView
