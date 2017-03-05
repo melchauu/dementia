@@ -94,6 +94,7 @@ public class findNextWords extends Activity {
                 // Error
                 e.printStackTrace();
             }
+            if (response==null) return speechStr;
             return response.toString();
         }
 

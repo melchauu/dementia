@@ -193,37 +193,38 @@ public class MainActivity extends Activity implements
             for (int i = 0; i < theFinalWords.length(); i++) {
                 theFinalWords.getString(i);
             }
-            check = theFinalWords.getString(0);
+            if(theFinalWords.getString(0)!=null) {
+                check = theFinalWords.getString(0);
 
 
-            findImage letsGetaPicture = new findImage();
-            returnedImageURl = letsGetaPicture.getImage(check);
+                findImage letsGetaPicture = new findImage();
+                returnedImageURl = letsGetaPicture.getImage(check);
 
 
-            JSONObject findFirstResult = new JSONObject(returnedImageURl);
-            JSONArray firstImageReturned = new JSONArray();
-            JSONObject findThumbnail = new JSONObject();
-            String thumbnailURL = new String();
+                JSONObject findFirstResult = new JSONObject(returnedImageURl);
+                JSONArray firstImageReturned = new JSONArray();
+                JSONObject findThumbnail = new JSONObject();
+                String thumbnailURL = new String();
 
-            if (findFirstResult.getJSONArray("value") != null)
+                if (findFirstResult.getJSONArray("value") != null)
 
-            {
-                firstImageReturned = findFirstResult.getJSONArray("value");
+                {
+                    firstImageReturned = findFirstResult.getJSONArray("value");
 
-                if (firstImageReturned.getJSONObject(0) != null) {
-                    findThumbnail = firstImageReturned.getJSONObject(0);
+                    if (firstImageReturned.getJSONObject(0) != null) {
+                        findThumbnail = firstImageReturned.getJSONObject(0);
+                    }
+
+                    if (findThumbnail.getString("thumbnailUrl") != null) {
+                        thumbnailURL = findThumbnail.getString("thumbnailUrl");
+                    }
+
+                    URL displayImage = new URL(thumbnailURL);
+                    Bitmap bmp = BitmapFactory.decodeStream(displayImage.openConnection().getInputStream());
+                    returnedImages.setImageBitmap(bmp);
                 }
 
-                if (findThumbnail.getString("thumbnailUrl") != null) {
-                    thumbnailURL = findThumbnail.getString("thumbnailUrl");
-                }
-
-                URL displayImage = new URL(thumbnailURL);
-                Bitmap bmp = BitmapFactory.decodeStream(displayImage.openConnection().getInputStream());
-                returnedImages.setImageBitmap(bmp);
             }
-
-
             /******* Find Sentiment *********/
 
             String returnedStringSentiment;
@@ -251,11 +252,11 @@ public class MainActivity extends Activity implements
 
 
             if (feelingSentiment > 0.7) {
-                sentimentFace.setBackgroundResource(R.drawable.emoticon_17_48);
+                sentimentFace.setImageResource(R.drawable.emoticon_17_48);
             } else if (feelingSentiment > 0.5) {
-                sentimentFace.setBackgroundResource(R.drawable.happy_48);
+                sentimentFace.setImageResource(R.drawable.happy_48);
             } else {
-                sentimentFace.setBackgroundResource(R.drawable.emoticon_3_48);
+                sentimentFace.setImageResource(R.drawable.emoticon_3_48);
             }
 
 
