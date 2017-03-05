@@ -65,7 +65,7 @@ public class HttpLogin extends Activity {
             connection.setRequestMethod("POST");
             request = new OutputStreamWriter(connection.getOutputStream());
 
-            Toast.makeText(this,"Returned Text from Speech: \n"+ jsonStr, Toast.LENGTH_LONG).show();
+           // Toast.makeText(this,"Returned Text from Speech: \n"+ jsonStr, Toast.LENGTH_LONG).show();
 
 
             request.write(jsonStr);
@@ -82,7 +82,7 @@ public class HttpLogin extends Activity {
             // Response from server after login process will be stored in response variable.
             response = sb.toString();
             // You can perform UI operations here
-            Toast.makeText(this,"Message from Server: \n"+ response, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this,"Message from Server: \n"+ response, Toast.LENGTH_LONG).show();
             isr.close();
             reader.close();
 
@@ -94,6 +94,11 @@ public class HttpLogin extends Activity {
             e.printStackTrace();
         }
         catch(IOException e)
+        {
+            // Error
+            e.printStackTrace();
+        }
+        catch(Exception e)
         {
             // Error
             e.printStackTrace();

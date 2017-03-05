@@ -2,6 +2,7 @@ package com.example.melody.dementia;
 
 import java.util.ArrayList;
 
+import android.os.StrictMode;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,15 +28,19 @@ public class MainActivity extends Activity implements
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "VoiceRecogActivity";
+    private ImageView returnedImages;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         returnedText = (TextView) findViewById(R.id.textView1);
         progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
+        returnedImages = (ImageView) findViewById (R.id.imageView1);
 
         progressBar.setVisibility(View.INVISIBLE);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
@@ -137,9 +143,11 @@ public class MainActivity extends Activity implements
         // send text off to service
         //Toast.makeText(this,"Returned Text from Speech: \n"+ text, Toast.LENGTH_LONG).show();
 
-        returnedText.setText(text);
+        //returnedText.setText(text);
         HttpLogin newReq = new HttpLogin();
-        newReq.sendReceiveRequest(text);
+        String returnedJsonKeywords;
+
+        returnedJsonKeywords=newReq.sendReceiveRequest(text);
     }
 
     @Override
