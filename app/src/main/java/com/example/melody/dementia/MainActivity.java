@@ -18,6 +18,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity implements
         RecognitionListener {
@@ -132,6 +135,8 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onResults(Bundle results) {
+        JSONArray Keywords = new JSONArray();
+        try {
         Log.i(LOG_TAG, "onResults");
         ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
@@ -145,9 +150,34 @@ public class MainActivity extends Activity implements
 
         //returnedText.setText(text);
         HttpLogin newReq = new HttpLogin();
-        String returnedJsonKeywords;
+        String returnedStringKeywords;
 
-        returnedJsonKeywords=newReq.sendReceiveRequest(text);
+        returnedStringKeywords=newReq.sendReceiveRequest(text);
+
+            JSONObject returnedJson = new JSONObject(returnedStringKeywords);
+
+
+            JSONArray returnedKeyWordsJson = new JSONArray();
+
+            if(returnedJson.getJSONObject("documents")!=null)
+            {
+                returnedKeyWordsJson = returnedJson.getJSONArray("documents");
+
+                if(returnedKeyWordsJson.getJSONArray(1)!=null)
+                {
+                    Keywords = returnedKeyWordsJson.getJSONArray(1);
+                }
+            }
+
+            for (int i = 0; i < Keywords.length(); i++) {
+                Keywords.getJSONObject(i);
+            }
+        }
+
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
