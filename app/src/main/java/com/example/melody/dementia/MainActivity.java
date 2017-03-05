@@ -1,5 +1,6 @@
 package com.example.melody.dementia;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import android.os.StrictMode;
@@ -135,7 +136,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onResults(Bundle results) {
-        JSONArray Keywords = new JSONArray();
+        JSONObject Keywords = new JSONObject();
         try {
         Log.i(LOG_TAG, "onResults");
         ArrayList<String> matches = results
@@ -158,19 +159,27 @@ public class MainActivity extends Activity implements
 
 
             JSONArray returnedKeyWordsJson = new JSONArray();
+            JSONArray theFinalWords = new JSONArray();
 
-            if(returnedJson.getJSONObject("documents")!=null)
+            if(returnedJson.getJSONArray("documents")!=null)
             {
                 returnedKeyWordsJson = returnedJson.getJSONArray("documents");
 
-                if(returnedKeyWordsJson.getJSONArray(1)!=null)
+                if(returnedKeyWordsJson.getString(0)!=null)
                 {
-                    Keywords = returnedKeyWordsJson.getJSONArray(1);
+                    Keywords = returnedKeyWordsJson.getJSONObject(0);
+
+                    if(Keywords.getJSONArray("keyPhrases")!=null)
+                    {
+                        theFinalWords=Keywords.getJSONArray("keyPhrases");
+                    }
                 }
             }
 
-            for (int i = 0; i < Keywords.length(); i++) {
-                Keywords.getJSONObject(i);
+            for (int i = 0; i < theFinalWords.length(); i++) {
+                theFinalWords.getString(i);
+                String check;
+                check = theFinalWords.getString(i);
             }
         }
 
